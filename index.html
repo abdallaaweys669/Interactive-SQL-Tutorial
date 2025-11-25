@@ -17,7 +17,7 @@
             color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
         }
 
         .container {
@@ -32,51 +32,58 @@
         header {
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             margin-bottom: 10px;
         }
 
         header p {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.9;
         }
 
         .main-content {
             display: flex;
+            flex-direction: column;
             min-height: 600px;
         }
 
         .sidebar {
-            width: 300px;
+            width: 100%;
             background: #f8f9fa;
-            border-right: 1px solid #e9ecef;
-            padding: 20px;
-            overflow-y: auto;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px;
+            overflow-x: auto;
         }
 
         .lesson-list {
             list-style: none;
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 10px;
         }
 
         .lesson-item {
-            padding: 15px;
-            margin-bottom: 10px;
+            padding: 12px 15px;
+            margin-right: 10px;
             background: white;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             border-left: 4px solid #3498db;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .lesson-item:hover {
             background: #e3f2fd;
-            transform: translateX(5px);
+            transform: translateY(-3px);
         }
 
         .lesson-item.active {
@@ -87,7 +94,7 @@
 
         .content-area {
             flex: 1;
-            padding: 30px;
+            padding: 20px;
             overflow-y: auto;
         }
 
@@ -107,33 +114,36 @@
 
         h2 {
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #3498db;
+            font-size: 1.5rem;
         }
 
         h3 {
             color: #3498db;
-            margin: 20px 0 10px;
+            margin: 15px 0 10px;
+            font-size: 1.2rem;
         }
 
         .explanation {
             background: #e3f2fd;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 15px 0;
             border-left: 4px solid #3498db;
         }
 
         .code-block {
             background: #2c3e50;
             color: #ecf0f1;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
-            margin: 15px 0;
+            margin: 12px 0;
             font-family: 'Courier New', monospace;
             overflow-x: auto;
             position: relative;
+            font-size: 0.9rem;
         }
 
         .code-comment {
@@ -151,16 +161,16 @@
 
         .interactive-demo {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 15px 0;
             border: 1px solid #e9ecef;
         }
 
         .demo-controls {
             display: flex;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 8px;
+            margin: 12px 0;
             flex-wrap: wrap;
         }
 
@@ -168,11 +178,12 @@
             background: #3498db;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s ease;
             font-weight: bold;
+            font-size: 0.9rem;
         }
 
         button:hover {
@@ -183,17 +194,19 @@
             background: white;
             border: 1px solid #ddd;
             border-radius: 5px;
-            padding: 15px;
-            margin-top: 15px;
-            min-height: 100px;
+            padding: 12px;
+            margin-top: 12px;
+            min-height: 80px;
             font-family: 'Courier New', monospace;
             white-space: pre-wrap;
+            font-size: 0.85rem;
+            overflow-x: auto;
         }
 
         .progress-bar {
             height: 5px;
             background: #e9ecef;
-            margin: 20px 0;
+            margin: 15px 0;
             border-radius: 5px;
             overflow: hidden;
         }
@@ -208,28 +221,121 @@
         .navigation {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 15px;
             border-top: 1px solid #e9ecef;
         }
 
         .completion-message {
             background: #d4edda;
             color: #155724;
-            padding: 15px;
+            padding: 12px;
             border-radius: 5px;
-            margin: 15px 0;
+            margin: 12px 0;
             display: none;
         }
 
-        @media (max-width: 768px) {
+        /* Tablet styles */
+        @media (min-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 25px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            header p {
+                font-size: 1.1rem;
+            }
+            
             .main-content {
+                flex-direction: row;
+            }
+            
+            .sidebar {
+                width: 300px;
+                border-right: 1px solid #e9ecef;
+                border-bottom: none;
+                overflow-y: auto;
+            }
+            
+            .lesson-list {
+                display: block;
+                overflow-x: visible;
+            }
+            
+            .lesson-item {
+                margin-right: 0;
+                margin-bottom: 10px;
+                white-space: normal;
+            }
+            
+            .lesson-item:hover {
+                transform: translateX(5px);
+            }
+            
+            .content-area {
+                padding: 25px;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            .code-block, .demo-result {
+                font-size: 1rem;
+            }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 1024px) {
+            header {
+                padding: 30px;
+            }
+            
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .content-area {
+                padding: 30px;
+            }
+            
+            .explanation, .interactive-demo {
+                padding: 20px;
+            }
+            
+            .code-block {
+                padding: 20px;
+            }
+            
+            button {
+                padding: 10px 15px;
+            }
+        }
+
+        /* Small mobile adjustments */
+        @media (max-width: 360px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .lesson-item {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .demo-controls {
                 flex-direction: column;
             }
-            .sidebar {
+            
+            button {
                 width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #e9ecef;
             }
         }
     </style>

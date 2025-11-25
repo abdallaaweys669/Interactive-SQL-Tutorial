@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SQL Server Course - Learn Step by Step</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .lesson-list {
+            list-style: none;
+        }
+
+        .lesson-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .lesson-item:hover {
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .lesson-item.active {
+            background: #3498db;
+            color: white;
+            border-left: 4px solid #2c3e50;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .lesson-content {
+            display: none;
+        }
+
+        .lesson-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h3 {
+            color: #3498db;
+            margin: 20px 0 10px;
+        }
+
+        .explanation {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-comment {
+            color: #7fdbff;
+        }
+
+        .sql-keyword {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .sql-function {
+            color: #69db7c;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .demo-result {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+
+        .progress-bar {
+            height: 5px;
+            background: #e9ecef;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .completion-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Interactive SQL Server Course</h1>
+            <p>Learn SQL Server from basics to advanced - No prior experience needed!</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <ul class="lesson-list" id="lessonList">
+                    <!-- Lessons will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="content-area" id="contentArea">
+                <!-- Lesson content will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button id="prevBtn" onclick="previousLesson()">Previous Lesson</button>
+            <button id="nextBtn" onclick="nextLesson()">Next Lesson</button>
+        </div>
+    </div>
+
+    <script>
+        // Course data structure
+        const courseData = [
+            {
+                id: 1,
+                title: "Welcome to SQL Server",
+                content: `
+                    <h2>Welcome to Your SQL Server Journey! 👋</h2>
+                    <div class="explanation">
+                        <p>Hello! Welcome to our interactive SQL Server course. I'm here to guide you through learning database management step by step.</p>
+                        <p><strong>What is SQL Server?</strong> It's a powerful database management system from Microsoft that helps store, organize, and retrieve data efficiently.</p>
+                        <p><strong>What you'll learn:</strong></p>
+                        <ul>
+                            <li>Creating and managing databases</li>
+                            <li>Basic to advanced SQL commands</li>
+                            <li>Working with data (CRUD operations)</li>
+                            <li>Modifying database structure</li>
+                            <li>Using functions to analyze data</li>
+                        </ul>
+                        <p>Don't worry if this is new - we'll go step by step with plenty of examples!</p>
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Let's Get Started! 🚀</h3>
+                        <p>Click the button below to see your first SQL command:</p>
+                        <div class="demo-controls">
+                            <button onclick="showWelcomeDemo()">Show Welcome Example</button>
+                        </div>
+                        <div class="demo-result" id="welcomeResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 2,
+                title: "Creating Your First Database",
+                content: `
+                    <h2>Creating Databases 🗃️</h2>
+                    <div class="explanation">
+                        <p>A database is like a digital filing cabinet where we store related information. In SQL Server, we use the <span class="sql-keyword">CREATE DATABASE</span> command to create a new database.</p>
+                        <p><strong>Key Points:</strong></p>
+                        <ul>
+                            <li>Database names should be descriptive</li>
+                            <li>Use meaningful names (avoid spaces, use underscores)</li>
+                            <li>Always end SQL statements with a semicolon (;)</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- Create a new database for our school system</span><br>
+                        <span class="sql-keyword">CREATE DATABASE</span> SchoolDB;<br><br>
+                        
+                        <span class="code-comment">-- Switch to using our new database</span><br>
+                        <span class="sql-keyword">USE</span> SchoolDB;
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Try It Yourself! ✨</h3>
+                        <p>Let's create a database for a library system:</p>
+                        <div class="demo-controls">
+                            <button onclick="createDatabaseDemo()">Create Library Database</button>
+                            <button onclick="showDatabaseCode()">Show SQL Code</button>
+                        </div>
+                        <div class="demo-result" id="databaseResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 3,
+                title: "Creating Tables and Understanding Data Types",
+                content: `
+                    <h2>Creating Tables 📊</h2>
+                    <div class="explanation">
+                        <p>Tables are where we actually store data in a database. Think of them like spreadsheets with rows and columns.</p>
+                        <p><strong>Common Data Types:</strong></p>
+                        <ul>
+                            <li><strong>INT</strong> - Whole numbers (1, 2, 3...)</li>
+                            <li><strong>VARCHAR(n)</strong> - Text up to 'n' characters</li>
+                            <li><strong>DATE</strong> - Dates only</li>
+                            <li><strong>DECIMAL</strong> - Decimal numbers</li>
+                            <li><strong>BIT</strong> - True/False values</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- Create a Students table</span><br>
+                        <span class="sql-keyword">CREATE TABLE</span> Students (<br>
+                        &nbsp;&nbsp;StudentID <span class="sql-keyword">INT PRIMARY KEY</span>,<br>
+                        &nbsp;&nbsp;FirstName <span class="sql-keyword">VARCHAR</span>(50) <span class="sql-keyword">NOT NULL</span>,<br>
+                        &nbsp;&nbsp;LastName <span class="sql-keyword">VARCHAR</span>(50) <span class="sql-keyword">NOT NULL</span>,<br>
+                        &nbsp;&nbsp;BirthDate <span class="sql-keyword">DATE</span>,<br>
+                        &nbsp;&nbsp;Email <span class="sql-keyword">VARCHAR</span>(100)<br>
+                        );
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Build Your Own Table 🛠️</h3>
+                        <p>Let's create a Books table for our library:</p>
+                        <div class="demo-controls">
+                            <button onclick="createTableDemo()">Create Books Table</button>
+                            <button onclick="explainTableStructure()">Explain Table Structure</button>
+                        </div>
+                        <div class="demo-result" id="tableResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 4,
+                title: "INSERT - Adding Data to Tables",
+                content: `
+                    <h2>INSERT - Adding Data ➕</h2>
+                    <div class="explanation">
+                        <p>The <span class="sql-keyword">INSERT</span> command lets us add new records to our tables.</p>
+                        <p><strong>Two Ways to Insert:</strong></p>
+                        <ol>
+                            <li>Specify both columns and values</li>
+                            <li>Just specify values (must match table order)</li>
+                        </ol>
+                        <p><strong>Tip:</strong> Method 1 is safer and more readable!</p>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- Method 1: Specify columns and values</span><br>
+                        <span class="sql-keyword">INSERT INTO</span> Students (StudentID, FirstName, LastName, BirthDate, Email)<br>
+                        <span class="sql-keyword">VALUES</span> (1, 'John', 'Doe', '2000-05-15', 'john.doe@email.com');<br><br>
+                        
+                        <span class="code-comment">-- Insert multiple records at once</span><br>
+                        <span class="sql-keyword">INSERT INTO</span> Students (StudentID, FirstName, LastName, BirthDate, Email)<br>
+                        <span class="sql-keyword">VALUES</span> <br>
+                        &nbsp;&nbsp;(2, 'Jane', 'Smith', '1999-08-22', 'jane.smith@email.com'),<br>
+                        &nbsp;&nbsp;(3, 'Mike', 'Johnson', '2001-03-10', 'mike.j@email.com');
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Add Some Books! 📚</h3>
+                        <p>Let's add books to our library database:</p>
+                        <div class="demo-controls">
+                            <button onclick="insertDataDemo()">Insert Sample Books</button>
+                            <button onclick="showInsertedData()">Show Inserted Data</button>
+                        </div>
+                        <div class="demo-result" id="insertResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 5,
+                title: "SELECT - Reading Data from Tables",
+                content: `
+                    <h2>SELECT - Reading Data 👀</h2>
+                    <div class="explanation">
+                        <p>The <span class="sql-keyword">SELECT</span> command is how we retrieve data from tables. It's probably the most used SQL command!</p>
+                        <p><strong>Basic Syntax:</strong></p>
+                        <ul>
+                            <li><span class="sql-keyword">SELECT</span> - What columns to show</li>
+                            <li><span class="sql-keyword">FROM</span> - Which table to get data from</li>
+                            <li><span class="sql-keyword">WHERE</span> - Filter conditions (optional)</li>
+                            <li><span class="sql-keyword">ORDER BY</span> - Sort results (optional)</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- Select all columns from Students</span><br>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> Students;<br><br>
+                        
+                        <span class="code-comment">-- Select specific columns</span><br>
+                        <span class="sql-keyword">SELECT</span> FirstName, LastName, Email <span class="sql-keyword">FROM</span> Students;<br><br>
+                        
+                        <span class="code-comment">-- Select with filtering</span><br>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> Students <br>
+                        <span class="sql-keyword">WHERE</span> BirthDate > '2000-01-01';<br><br>
+                        
+                        <span class="code-comment">-- Select with sorting</span><br>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> Students <br>
+                        <span class="sql-keyword">ORDER BY</span> LastName <span class="sql-keyword">ASC</span>;
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Query Your Data! 🔍</h3>
+                        <p>Practice selecting data from our books table:</p>
+                        <div class="demo-controls">
+                            <button onclick="selectAllBooks()">Show All Books</button>
+                            <button onclick="selectRecentBooks()">Books After 1950</button>
+                            <button onclick="selectSortedBooks()">Books Sorted by Title</button>
+                        </div>
+                        <div class="demo-result" id="selectResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 6,
+                title: "UPDATE - Modifying Existing Data",
+                content: `
+                    <h2>UPDATE - Changing Data ✏️</h2>
+                    <div class="explanation">
+                        <p>The <span class="sql-keyword">UPDATE</span> command lets us modify existing records in a table.</p>
+                        <p><strong>Important Safety Tip:</strong> Always use <span class="sql-keyword">WHERE</span> clause with UPDATE, or you'll update ALL records!</p>
+                        <p><strong>Syntax:</strong> UPDATE table_name SET column = value WHERE condition;</p>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- Update a student's email</span><br>
+                        <span class="sql-keyword">UPDATE</span> Students<br>
+                        <span class="sql-keyword">SET</span> Email = 'john.newemail@school.com'<br>
+                        <span class="sql-keyword">WHERE</span> StudentID = 1;<br><br>
+                        
+                        <span class="code-comment">-- Update multiple columns</span><br>
+                        <span class="sql-keyword">UPDATE</span> Students<br>
+                        <span class="sql-keyword">SET</span> FirstName = 'Michael', LastName = 'Brown'<br>
+                        <span class="sql-keyword">WHERE</span> StudentID = 3;
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Update Book Information! 📝</h3>
+                        <p>Let's practice updating our book records:</p>
+                        <div class="demo-controls">
+                            <button onclick="showCurrentBooks()">Show Current Books</button>
+                            <button onclick="updateBookPrice()">Update Book Price</button>
+                            <button onclick="updateBookYear()">Update Publication Year</button>
+                        </div>
+                        <div class="demo-result" id="updateResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 7,
+                title: "DELETE - Removing Data",
+                content: `
+                    <h2>DELETE - Removing Data 🗑️</h2>
+                    <div class="explanation">
+                        <p>The <span class="sql-keyword">DELETE</span> command removes records from a table.</p>
+                        <p><strong>CRITICAL:</strong> Always use <span class="sql-keyword">WHERE</span> with DELETE, or you'll delete ALL data!</p>
+                        <p><strong>Best Practice:</strong> Test your WHERE clause with SELECT first to see which records will be deleted.</p>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- First, check which records will be deleted</span><br>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> Students <br>
+                        <span class="sql-keyword">WHERE</span> StudentID = 3;<br><br>
+                        
+                        <span class="code-comment">-- Now delete the record</span><br>
+                        <span class="sql-keyword">DELETE FROM</span> Students<br>
+                        <span class="sql-keyword">WHERE</span> StudentID = 3;<br><br>
+                        
+                        <span class="code-comment">-- Delete based on condition</span><br>
+                        <span class="sql-keyword">DELETE FROM</span> Students<br>
+                        <span class="sql-keyword">WHERE</span> BirthDate < '1990-01-01';
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Safe Deletion Practice 🛡️</h3>
+                        <p>Let's practice safe deletion techniques:</p>
+                        <div class="demo-controls">
+                            <button onclick="showBooksBeforeDelete()">Show Books Before Delete</button>
+                            <button onclick="safeDeleteDemo()">Safe Delete Demonstration</button>
+                            <button onclick="showBooksAfterDelete()">Show Books After Delete</button>
+                        </div>
+                        <div class="demo-result" id="deleteResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 8,
+                title: "ALTER - Modifying Table Structure",
+                content: `
+                    <h2>ALTER - Changing Table Structure 🏗️</h2>
+                    <div class="explanation">
+                        <p>The <span class="sql-keyword">ALTER TABLE</span> command lets us modify an existing table's structure after it's created.</p>
+                        <p><strong>Common Uses:</strong></p>
+                        <ul>
+                            <li>Add new columns</li>
+                            <li>Modify existing columns</li>
+                            <li>Drop (remove) columns</li>
+                            <li>Add constraints</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- Add a new column to Students table</span><br>
+                        <span class="sql-keyword">ALTER TABLE</span> Students<br>
+                        <span class="sql-keyword">ADD</span> PhoneNumber <span class="sql-keyword">VARCHAR</span>(15);<br><br>
+                        
+                        <span class="code-comment">-- Modify an existing column</span><br>
+                        <span class="sql-keyword">ALTER TABLE</span> Students<br>
+                        <span class="sql-keyword">ALTER COLUMN</span> Email <span class="sql-keyword">VARCHAR</span>(150);<br><br>
+                        
+                        <span class="code-comment">-- Drop a column</span><br>
+                        <span class="sql-keyword">ALTER TABLE</span> Students<br>
+                        <span class="sql-keyword">DROP COLUMN</span> PhoneNumber;
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Modify Your Tables! 🔧</h3>
+                        <p>Let's practice altering our Books table:</p>
+                        <div class="demo-controls">
+                            <button onclick="showTableStructure()">Show Current Structure</button>
+                            <button onclick="addColumnDemo()">Add Genre Column</button>
+                            <button onclick="modifyColumnDemo()">Modify Price Column</button>
+                        </div>
+                        <div class="demo-result" id="alterResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 9,
+                title: "Aggregate Functions - Data Analysis",
+                content: `
+                    <h2>Aggregate Functions - Analyzing Data 📈</h2>
+                    <div class="explanation">
+                        <p>Aggregate functions perform calculations on multiple rows and return a single value. They're essential for data analysis!</p>
+                        <p><strong>Common Aggregate Functions:</strong></p>
+                        <ul>
+                            <li><span class="sql-function">COUNT()</span> - Count number of rows</li>
+                            <li><span class="sql-function">SUM()</span> - Calculate total sum</li>
+                            <li><span class="sql-function">AVG()</span> - Calculate average</li>
+                            <li><span class="sql-function">MIN()</span> - Find minimum value</li>
+                            <li><span class="sql-function">MAX()</span> - Find maximum value</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+                        <span class="code-comment">-- Count total students</span><br>
+                        <span class="sql-keyword">SELECT</span> <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> TotalStudents <span class="sql-keyword">FROM</span> Students;<br><br>
+                        
+                        <span class="code-comment">-- Find average publication year</span><br>
+                        <span class="sql-keyword">SELECT</span> <span class="sql-function">AVG</span>(PublicationYear) <span class="sql-keyword">AS</span> AvgYear <span class="sql-keyword">FROM</span> Books;<br><br>
+                        
+                        <span class="code-comment">-- Group by with aggregates</span><br>
+                        <span class="sql-keyword">SELECT</span> Genre, <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> BookCount<br>
+                        <span class="sql-keyword">FROM</span> Books<br>
+                        <span class="sql-keyword">GROUP BY</span> Genre;
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Analyze Your Data! 🔬</h3>
+                        <p>Let's analyze our book collection using aggregate functions:</p>
+                        <div class="demo-controls">
+                            <button onclick="countBooks()">Count Total Books</button>
+                            <button onclick="bookStats()">Book Statistics</button>
+                            <button onclick="genreAnalysis()">Genre Analysis</button>
+                        </div>
+                        <div class="demo-result" id="aggregateResult"></div>
+                    </div>
+                `
+            },
+            {
+                id: 10,
+                title: "Course Completion - Congratulations!",
+                content: `
+                    <h2>Congratulations! 🎉</h2>
+                    <div class="explanation">
+                        <p>You've completed the SQL Server fundamentals course! Give yourself a pat on the back! 🥳</p>
+                        <p><strong>What You've Learned:</strong></p>
+                        <ul>
+                            <li>✅ Creating databases and tables</li>
+                            <li>✅ All CRUD operations (Create, Read, Update, Delete)</li>
+                            <li>✅ Modifying table structures with ALTER</li>
+                            <li>✅ Using aggregate functions for data analysis</li>
+                            <li>✅ Writing safe and efficient SQL queries</li>
+                        </ul>
+                        <p><strong>Next Steps:</strong></p>
+                        <ul>
+                            <li>Practice with real-world projects</li>
+                            <li>Learn about JOIN operations</li>
+                            <li>Explore stored procedures and functions</li>
+                            <li>Study database design principles</li>
+                        </ul>
+                    </div>
+
+                    <div class="completion-message" id="completionMessage">
+                        <strong>Well done!</strong> You've successfully completed the Interactive SQL Server Course. Keep practicing and building your skills!
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Final Practice Challenge 💪</h3>
+                        <p>Let's put all your skills together in a final challenge:</p>
+                        <div class="demo-controls">
+                            <button onclick="finalChallenge()">Start Final Challenge</button>
+                            <button onclick="showChallengeSolution()">Show Solution</button>
+                        </div>
+                        <div class="demo-result" id="challengeResult"></div>
+                    </div>
+                `
+            }
+        ];
+
+        // Current lesson tracking
+        let currentLesson = 0;
+
+        // Initialize the course
+        function initializeCourse() {
+            populateLessonList();
+            showLesson(currentLesson);
+            updateProgress();
+        }
+
+        // Populate the lesson list
+        function populateLessonList() {
+            const lessonList = document.getElementById('lessonList');
+            courseData.forEach((lesson, index) => {
+                const li = document.createElement('li');
+                li.className = `lesson-item ${index === 0 ? 'active' : ''}`;
+                li.innerHTML = `
+                    <strong>Lesson ${lesson.id}</strong><br>
+                    ${lesson.title}
+                `;
+                li.onclick = () => showLesson(index);
+                lessonList.appendChild(li);
+            });
+        }
+
+        // Show a specific lesson
+        function showLesson(lessonIndex) {
+            // Update active lesson in sidebar
+            document.querySelectorAll('.lesson-item').forEach((item, index) => {
+                item.classList.toggle('active', index === lessonIndex);
+            });
+
+            // Update content area
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = courseData[lessonIndex].content;
+
+            // Update current lesson
+            currentLesson = lessonIndex;
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').style.display = lessonIndex === 0 ? 'none' : 'block';
+            document.getElementById('nextBtn').textContent = lessonIndex === courseData.length - 1 ? 'Finish Course' : 'Next Lesson';
+
+            // Update progress
+            updateProgress();
+
+            // Show completion message on last lesson
+            if (lessonIndex === courseData.length - 1) {
+                document.getElementById('completionMessage').style.display = 'block';
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentLesson + 1) / courseData.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+        }
+
+        // Navigation functions
+        function nextLesson() {
+            if (currentLesson < courseData.length - 1) {
+                showLesson(currentLesson + 1);
+            } else {
+                alert('Congratulations! You have completed the course! 🎉');
+            }
+        }
+
+        function previousLesson() {
+            if (currentLesson > 0) {
+                showLesson(currentLesson - 1);
+            }
+        }
+
+        // Demo functions for interactive examples
+        function showWelcomeDemo() {
+            document.getElementById('welcomeResult').innerHTML = 
+`-- Your first SQL command!
+SELECT 'Hello, SQL Learner!' AS WelcomeMessage;
+
+-- Result:
+WelcomeMessage
+-----------------
+Hello, SQL Learner!
+
+🎉 Great job! You just ran your first SQL command!`;
+        }
+
+        function createDatabaseDemo() {
+            document.getElementById('databaseResult').innerHTML = 
+`-- Creating the Library database
+CREATE DATABASE LibraryDB;
+
+-- Switching to use the new database
+USE LibraryDB;
+
+✅ Database created successfully!
+The LibraryDB database is now ready for use.
+
+📚 Think of a database as a container for all your related data.`;
+        }
+
+        function showDatabaseCode() {
+            document.getElementById('databaseResult').innerHTML = 
+`-- SQL Code to create a database:
+CREATE DATABASE YourDatabaseName;
+
+-- Switch to the database:
+USE YourDatabaseName;
+
+💡 Remember:
+• Database names should be descriptive
+• Use meaningful names (LibraryDB, SchoolDB, etc.)
+• Always end with a semicolon (;)`;
+        }
+
+        function createTableDemo() {
+            document.getElementById('tableResult').innerHTML = 
+`-- Creating Books table
+CREATE TABLE Books (
+    BookID INT PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL,
+    Author VARCHAR(100),
+    PublicationYear INT,
+    Price DECIMAL(10, 2),
+    InStock BIT
+);
+
+✅ Table created successfully!
+
+📊 The Books table now has these columns:
+• BookID (unique identifier)
+• Title (book name, required)
+• Author (writer's name)
+• PublicationYear (year published)
+• Price (cost with 2 decimal places)
+• InStock (true/false for availability)`;
+        }
+
+        function explainTableStructure() {
+            document.getElementById('tableResult').innerHTML = 
+`📋 Understanding Table Structure:
+
+PRIMARY KEY: Uniquely identifies each record
+VARCHAR(100): Text field that can hold up to 100 characters
+NOT NULL: This field must have a value (can't be empty)
+DECIMAL(10,2): Number with 10 total digits, 2 after decimal
+BIT: Stores 0 (false) or 1 (true)
+
+💡 Think of a table like a spreadsheet:
+• Columns = Fields (BookID, Title, Author...)
+• Rows = Records (individual book entries)`;
+        }
+
+        function insertDataDemo() {
+            document.getElementById('insertResult').innerHTML = 
+`-- Inserting sample books
+INSERT INTO Books (BookID, Title, Author, PublicationYear, Price, InStock)
+VALUES 
+(1, 'The Great Gatsby', 'F. Scott Fitzgerald', 1925, 12.99, 1),
+(2, 'To Kill a Mockingbird', 'Harper Lee', 1960, 14.50, 1),
+(3, '1984', 'George Orwell', 1949, 10.99, 0);
+
+✅ 3 books inserted successfully!
+
+📚 Our library now contains:
+1. The Great Gatsby (1925) - $12.99 - In Stock
+2. To Kill a Mockingbird (1960) - $14.50 - In Stock  
+3. 1984 (1949) - $10.99 - Out of Stock`;
+        }
+
+        function showInsertedData() {
+            document.getElementById('insertResult').innerHTML = 
+`-- Viewing our inserted data
+SELECT * FROM Books;
+
+📊 Result:
+BookID  Title                   Author              Year  Price  InStock
+------  ----------------------  ------------------  ----  -----  -------
+1       The Great Gatsby        F. Scott Fitzgerald 1925  12.99  1
+2       To Kill a Mockingbird   Harper Lee          1960  14.50  1  
+3       1984                    George Orwell       1949  10.99  0
+
+💡 Notice how each book is now a row in our table!`;
+        }
+
+        function selectAllBooks() {
+            document.getElementById('selectResult').innerHTML = 
+`-- Selecting all books
+SELECT * FROM Books;
+
+📚 All Books:
+BookID  Title                   Author              Year  Price  InStock
+1       The Great Gatsby        F. Scott Fitzgerald 1925  12.99  1
+2       To Kill a Mockingbird   Harper Lee          1960  14.50  1
+3       1984                    George Orwell       1949  10.99  0
+
+💡 The asterisk (*) means "all columns"`;
+        }
+
+        function selectRecentBooks() {
+            document.getElementById('selectResult').innerHTML = 
+`-- Books published after 1950
+SELECT BookID, Title, Author, PublicationYear 
+FROM Books 
+WHERE PublicationYear > 1950;
+
+📚 Recent Books:
+BookID  Title                   Author        Year
+2       To Kill a Mockingbird   Harper Lee    1960
+
+🔍 The WHERE clause filters results based on conditions`;
+        }
+
+        function selectSortedBooks() {
+            document.getElementById('selectResult').innerHTML = 
+`-- Books sorted by title
+SELECT Title, Author, PublicationYear
+FROM Books
+ORDER BY Title ASC;
+
+📚 Books Sorted Alphabetically:
+Title                   Author              Year
+1984                    George Orwell       1949
+The Great Gatsby        F. Scott Fitzgerald 1925
+To Kill a Mockingbird   Harper Lee          1960
+
+🔠 ORDER BY sorts your results (ASC = ascending, DESC = descending)`;
+        }
+
+        function showCurrentBooks() {
+            document.getElementById('updateResult').innerHTML = 
+`-- Current book data
+SELECT * FROM Books;
+
+📚 Current Books:
+BookID  Title                   Author              Year  Price  InStock
+1       The Great Gatsby        F. Scott Fitzgerald 1925  12.99  1
+2       To Kill a Mockingbird   Harper Lee          1960  14.50  1
+3       1984                    George Orwell       1949  10.99  0
+
+💰 Let's update some prices in the next steps!`;
+        }
+
+        function updateBookPrice() {
+            document.getElementById('updateResult').innerHTML = 
+`-- Updating price for 1984
+UPDATE Books
+SET Price = 9.99
+WHERE BookID = 3;
+
+✅ Price updated successfully!
+
+-- Checking the update
+SELECT BookID, Title, Price FROM Books WHERE BookID = 3;
+
+📊 Result:
+BookID  Title  Price
+3       1984   9.99
+
+💡 Always use WHERE to specify which record(s) to update!`;
+        }
+
+        function updateBookYear() {
+            document.getElementById('updateResult').innerHTML = 
+`-- Adding a new book for demonstration
+INSERT INTO Books (BookID, Title, Author, PublicationYear, Price, InStock)
+VALUES (4, 'The Catcher in the Rye', 'J.D. Salinger', 1951, 11.99, 1);
+
+-- Updating the publication year
+UPDATE Books
+SET PublicationYear = 1951
+WHERE Title = 'The Catcher in the Rye';
+
+✅ Book added and updated successfully!
+
+-- Viewing the result
+SELECT BookID, Title, Author, PublicationYear FROM Books;
+
+📚 Updated Book List:
+BookID  Title                   Author              Year
+1       The Great Gatsby        F. Scott Fitzgerald 1925
+2       To Kill a Mockingbird   Harper Lee          1960
+3       1984                    George Orwell       1949
+4       The Catcher in the Rye  J.D. Salinger       1951`;
+        }
+
+        function showBooksBeforeDelete() {
+            document.getElementById('deleteResult').innerHTML = 
+`-- Current books before any deletion
+SELECT * FROM Books;
+
+📚 Current Books:
+BookID  Title                   Author              Year  Price  InStock
+1       The Great Gatsby        F. Scott Fitzgerald 1925  12.99  1
+2       To Kill a Mockingbird   Harper Lee          1960  14.50  1
+3       1984                    George Orwell       1949   9.99  0
+4       The Catcher in the Rye  J.D. Salinger       1951  11.99  1
+
+⚠️ Let's practice safe deletion in the next step!`;
+        }
+
+        function safeDeleteDemo() {
+            document.getElementById('deleteResult').innerHTML = 
+`-- SAFE DELETE PRACTICE
+
+-- Step 1: First check what will be deleted
+SELECT * FROM Books 
+WHERE InStock = 0;
+
+📊 Books that are out of stock:
+BookID  Title  Author        Year  Price  InStock
+3       1984   George Orwell 1949   9.99  0
+
+-- Step 2: Now delete safely
+DELETE FROM Books 
+WHERE InStock = 0;
+
+✅ 1 book deleted safely!
+
+💡 Always use SELECT first to verify which records will be affected by DELETE!`;
+        }
+
+        function showBooksAfterDelete() {
+            document.getElementById('deleteResult').innerHTML = 
+`-- Books after safe deletion
+SELECT * FROM Books;
+
+📚 Remaining Books (In Stock):
+BookID  Title                   Author              Year  Price  InStock
+1       The Great Gatsby        F. Scott Fitzgerald 1925  12.99  1
+2       To Kill a Mockingbird   Harper Lee          1960  14.50  1
+4       The Catcher in the Rye  J.D. Salinger       1951  11.99  1
+
+🛡️ Safe deletion practice complete!
+We only removed out-of-stock books, keeping all available books.`;
+        }
+
+        function showTableStructure() {
+            document.getElementById('alterResult').innerHTML = 
+`-- Current Books table structure
+DESCRIBE Books;  -- Or in SQL Server: sp_help 'Books'
+
+📋 Current Structure:
+Column           Type          Constraints
+---------------  ------------  -----------
+BookID           INT           PRIMARY KEY
+Title            VARCHAR(100)  NOT NULL
+Author           VARCHAR(100)  NULL
+PublicationYear  INT           NULL
+Price            DECIMAL(10,2) NULL
+InStock          BIT           NULL
+
+🔧 Let's modify this structure in the next steps!`;
+        }
+
+        function addColumnDemo() {
+            document.getElementById('alterResult').innerHTML = 
+`-- Adding a Genre column
+ALTER TABLE Books
+ADD Genre VARCHAR(50);
+
+✅ Column added successfully!
+
+-- Updated structure
+SELECT * FROM Books;
+
+📊 Books with new Genre column:
+BookID  Title                   ...  Genre
+1       The Great Gatsby        ...  NULL
+2       To Kill a Mockingbird   ...  NULL
+4       The Catcher in the Rye  ...  NULL
+
+➕ The new Genre column is added with NULL values for existing records.
+We can now update these values as needed!`;
+        }
+
+        function modifyColumnDemo() {
+            document.getElementById('alterResult').innerHTML = 
+`-- Modifying Price column to allow larger values
+ALTER TABLE Books
+ALTER COLUMN Price DECIMAL(12, 2);
+
+✅ Column modified successfully!
+
+-- Updating some genres
+UPDATE Books SET Genre = 'Fiction' WHERE BookID IN (1, 2, 4);
+
+-- Viewing final result
+SELECT BookID, Title, Genre, Price FROM Books;
+
+📚 Final Book Data:
+BookID  Title                   Genre    Price
+1       The Great Gatsby        Fiction  12.99
+2       To Kill a Mockingbird   Fiction  14.50
+4       The Catcher in the Rye  Fiction  11.99
+
+🔧 We successfully:
+• Modified the Price column structure
+• Added Genre information
+• Maintained all existing data`;
+        }
+
+        function countBooks() {
+            document.getElementById('aggregateResult').innerHTML = 
+`-- Counting total books
+SELECT COUNT(*) AS TotalBooks FROM Books;
+
+📊 Result:
+TotalBooks
+----------
+3
+
+🔢 COUNT(*) counts all rows in the table`;
+        }
+
+        function bookStats() {
+            document.getElementById('aggregateResult').innerHTML = 
+`-- Book statistics
+SELECT 
+    COUNT(*) AS TotalBooks,
+    AVG(Price) AS AveragePrice,
+    MIN(PublicationYear) AS OldestBook,
+    MAX(PublicationYear) AS NewestBook
+FROM Books;
+
+📈 Book Statistics:
+TotalBooks  AveragePrice  OldestBook  NewestBook
+3           13.16         1925        1960
+
+📊 We can see:
+• 3 books total
+• Average price: $13.16
+• Oldest book: 1925
+• Newest book: 1960`;
+        }
+
+        function genreAnalysis() {
+            document.getElementById('aggregateResult').innerHTML = 
+`-- Adding more sample data for demonstration
+INSERT INTO Books (BookID, Title, Author, PublicationYear, Price, InStock, Genre)
+VALUES 
+(5, 'The Shining', 'Stephen King', 1977, 13.99, 1, 'Horror'),
+(6, 'Dune', 'Frank Herbert', 1965, 15.99, 1, 'Science Fiction');
+
+-- Genre analysis
+SELECT 
+    Genre,
+    COUNT(*) AS NumberOfBooks,
+    AVG(Price) AS AveragePrice
+FROM Books
+GROUP BY Genre
+ORDER BY NumberOfBooks DESC;
+
+📚 Genre Analysis:
+Genre              NumberOfBooks  AveragePrice
+Fiction            3              13.16
+Horror             1              13.99
+Science Fiction    1              15.99
+
+📈 GROUP BY lets us analyze data by categories!`;
+        }
+
+        function finalChallenge() {
+            document.getElementById('challengeResult').innerHTML = 
+`🎯 FINAL CHALLENGE
+
+Create a complete library management system:
+
+1. Create a LibraryMembers table with:
+   - MemberID (INT, PRIMARY KEY)
+   - FirstName (VARCHAR(50), NOT NULL
+   - LastName (VARCHAR(50), NOT NULL
+   - JoinDate (DATE)
+   - Email (VARCHAR(100))
+
+2. Insert 3 sample members
+
+3. Find members who joined this year
+
+4. Update a member's email
+
+5. Add a PhoneNumber column
+
+6. Count total members
+
+💡 Try to write the SQL for each step!
+Click "Show Solution" when you're ready.`;
+        }
+
+        function showChallengeSolution() {
+            document.getElementById('challengeResult').innerHTML = 
+`-- SOLUTION: Complete Library Management
+
+-- 1. Create LibraryMembers table
+CREATE TABLE LibraryMembers (
+    MemberID INT PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    JoinDate DATE,
+    Email VARCHAR(100)
+);
+
+-- 2. Insert sample members
+INSERT INTO LibraryMembers (MemberID, FirstName, LastName, JoinDate, Email)
+VALUES 
+(1, 'Alice', 'Johnson', '2023-01-15', 'alice@email.com'),
+(2, 'Bob', 'Smith', '2024-03-20', 'bob@email.com'),
+(3, 'Carol', 'Davis', '2024-05-10', 'carol@email.com');
+
+-- 3. Find recent members (joined this year)
+SELECT * FROM LibraryMembers 
+WHERE YEAR(JoinDate) = YEAR(GETDATE());
+
+-- 4. Update a member's email
+UPDATE LibraryMembers 
+SET Email = 'alice.new@email.com'
+WHERE MemberID = 1;
+
+-- 5. Add PhoneNumber column
+ALTER TABLE LibraryMembers
+ADD PhoneNumber VARCHAR(15);
+
+-- 6. Count total members
+SELECT COUNT(*) AS TotalMembers FROM LibraryMembers;
+
+🎉 EXCELLENT WORK!
+You've demonstrated all the key SQL skills:
+• CREATE TABLE
+• INSERT data
+• SELECT with WHERE
+• UPDATE records
+• ALTER TABLE
+• COUNT aggregate function
+
+Keep practicing and building your SQL skills!`;
+        }
+
+        // Initialize the course when page loads
+        window.onload = initializeCourse;
+    </script>
+</body>
+</html>

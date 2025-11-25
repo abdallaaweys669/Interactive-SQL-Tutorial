@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SQL Server Course - With Live Validation</title>
+    <style>
+        /* Previous styles remain the same, adding new ones for validation */
+        
+        .sql-editor {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+        
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .editor-title {
+            color: #7fdbff;
+            font-weight: bold;
+        }
+        
+        .editor-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        textarea.sql-input {
+            width: 100%;
+            height: 150px;
+            background: #1a252f;
+            color: #ecf0f1;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            resize: vertical;
+            tab-size: 4;
+        }
+        
+        textarea.sql-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .validation-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .validation-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .validation-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .error-highlight {
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .hint-box {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .syntax-rule {
+            background: #e3f2fd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .correct-syntax {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .incorrect-syntax {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Interactive SQL Server Course - With Live Validation</h1>
+            <p>Learn SQL with real-time syntax checking and error highlighting!</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <ul class="lesson-list" id="lessonList">
+                    <!-- Lessons populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="content-area" id="contentArea">
+                <!-- Lesson content populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button id="prevBtn" onclick="previousLesson()">Previous Lesson</button>
+            <button id="nextBtn" onclick="nextLesson()">Next Lesson</button>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced course data with validation exercises
+        const courseData = [
+            {
+                id: 1,
+                title: "Welcome to SQL Server",
+                content: `
+                    <h2>Welcome to Your SQL Server Journey! 👋</h2>
+                    <div class="explanation">
+                        <p>Hello! Welcome to our interactive SQL Server course with <strong>live syntax validation</strong>!</p>
+                        <p>Try writing SQL in the editor below - I'll help you fix any mistakes in real-time! 🚀</p>
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Your First SQL Editor 🎯</h3>
+                        <p>Try writing: <span class="syntax-rule">SELECT 'Hello, SQL!' AS Message;</span></p>
+                        
+                        <div class="sql-editor">
+                            <div class="editor-header">
+                                <div class="editor-title">SQL Editor</div>
+                                <div class="editor-controls">
+                                    <button onclick="validateSQL()">Check Syntax</button>
+                                    <button onclick="clearEditor()">Clear</button>
+                                </div>
+                            </div>
+                            <textarea class="sql-input" id="sqlInput1" placeholder="Write your SQL code here..." 
+                                      oninput="autoValidate(1)"></textarea>
+                            <div class="validation-result" id="validationResult1"></div>
+                        </div>
+
+                        <div class="hint-box">
+                            <strong>💡 Pro Tip:</strong> The editor will automatically check your syntax as you type! 
+                            Look for red underlines and error messages.
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 2,
+                title: "Creating Databases",
+                content: `
+                    <h2>Creating Databases 🗃️</h2>
+                    <div class="explanation">
+                        <p>Let's practice creating databases! The syntax is:</p>
+                        <div class="syntax-rule">
+                            <span class="correct-syntax">CREATE DATABASE database_name;</span>
+                        </div>
+                        <p><strong>Rules:</strong></p>
+                        <ul>
+                            <li>Use <strong>CREATE DATABASE</strong> (not CREATE DB)</li>
+                            <li>Database names cannot contain spaces</li>
+                            <li>End with a semicolon (;)</li>
+                            <li>Use meaningful names like SchoolDB, LibraryDB</li>
+                        </ul>
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Practice: Create a Database 🏗️</h3>
+                        <p>Try creating a database called "StudentManagement"</p>
+                        
+                        <div class="sql-editor">
+                            <div class="editor-header">
+                                <div class="editor-title">Database Creation Practice</div>
+                                <div class="editor-controls">
+                                    <button onclick="validateSQL()">Check Syntax</button>
+                                    <button onclick="showHint(2)">Get Hint</button>
+                                </div>
+                            </div>
+                            <textarea class="sql-input" id="sqlInput2" placeholder="Write CREATE DATABASE command here..." 
+                                      oninput="autoValidate(2)"></textarea>
+                            <div class="validation-result" id="validationResult2"></div>
+                        </div>
+
+                        <div class="hint-box" id="hintBox2" style="display: none;">
+                            <strong>💡 Hint:</strong> Start with <span class="syntax-rule">CREATE DATABASE StudentManagement;</span>
+                            Remember: no spaces in database names, and don't forget the semicolon!
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 3,
+                title: "Creating Tables",
+                content: `
+                    <h2>Creating Tables 📊</h2>
+                    <div class="explanation">
+                        <p>Now let's create tables! The syntax is more complex:</p>
+                        <div class="syntax-rule">
+                            CREATE TABLE table_name (<br>
+                            &nbsp;&nbsp;column1 datatype constraints,<br>
+                            &nbsp;&nbsp;column2 datatype constraints,<br>
+                            &nbsp;&nbsp;PRIMARY KEY (column1)<br>
+                            );
+                        </div>
+                        <p><strong>Common Mistakes to Avoid:</strong></p>
+                        <ul>
+                            <li>Missing commas between columns</li>
+                            <li>Forgetting data types (INT, VARCHAR, etc.)</li>
+                            <li>Missing parentheses</li>
+                            <li>No semicolon at the end</li>
+                        </ul>
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>Practice: Create a Students Table 🎓</h3>
+                        <p>Create a Students table with: StudentID (INT, PRIMARY KEY), FirstName (VARCHAR(50)), LastName (VARCHAR(50))</p>
+                        
+                        <div class="sql-editor">
+                            <div class="editor-header">
+                                <div class="editor-title">Table Creation Practice</div>
+                                <div class="editor-controls">
+                                    <button onclick="validateSQL()">Check Syntax</button>
+                                    <button onclick="showSolution(3)">Show Solution</button>
+                                </div>
+                            </div>
+                            <textarea class="sql-input" id="sqlInput3" placeholder="Write CREATE TABLE command here..." 
+                                      oninput="autoValidate(3)"></textarea>
+                            <div class="validation-result" id="validationResult3"></div>
+                        </div>
+
+                        <div class="hint-box" id="solutionBox3" style="display: none;">
+                            <strong>✅ Solution:</strong><br>
+                            <div class="syntax-rule">
+                                CREATE TABLE Students (<br>
+                                &nbsp;&nbsp;StudentID INT PRIMARY KEY,<br>
+                                &nbsp;&nbsp;FirstName VARCHAR(50),<br>
+                                &nbsp;&nbsp;LastName VARCHAR(50)<br>
+                                );
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+            // Additional lessons would follow the same pattern...
+        ];
+
+        // SQL Validation Rules
+        const sqlRules = {
+            createDatabase: {
+                pattern: /^CREATE\s+DATABASE\s+[a-zA-Z_][a-zA-Z0-9_]*\s*;?$/i,
+                error: "Syntax should be: CREATE DATABASE database_name;",
+                hint: "Use: CREATE DATABASE YourDatabaseName; (no spaces in name)"
+            },
+            createTable: {
+                pattern: /CREATE\s+TABLE\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(/i,
+                error: "Missing CREATE TABLE syntax or opening parenthesis",
+                hint: "Start with: CREATE TABLE table_name ("
+            },
+            selectStatement: {
+                pattern: /SELECT\s+.+\s+FROM\s+[a-zA-Z_][a-zA-Z0-9_]*/i,
+                error: "SELECT statement should have: SELECT columns FROM table",
+                hint: "Use: SELECT column1, column2 FROM table_name;"
+            }
+        };
+
+        // Current lesson tracking
+        let currentLesson = 0;
+
+        // Initialize the course
+        function initializeCourse() {
+            populateLessonList();
+            showLesson(currentLesson);
+            updateProgress();
+        }
+
+        // Populate the lesson list
+        function populateLessonList() {
+            const lessonList = document.getElementById('lessonList');
+            courseData.forEach((lesson, index) => {
+                const li = document.createElement('li');
+                li.className = `lesson-item ${index === 0 ? 'active' : ''}`;
+                li.innerHTML = `
+                    <strong>Lesson ${lesson.id}</strong><br>
+                    ${lesson.title}
+                `;
+                li.onclick = () => showLesson(index);
+                lessonList.appendChild(li);
+            });
+        }
+
+        // Show a specific lesson
+        function showLesson(lessonIndex) {
+            // Update active lesson in sidebar
+            document.querySelectorAll('.lesson-item').forEach((item, index) => {
+                item.classList.toggle('active', index === lessonIndex);
+            });
+
+            // Update content area
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = courseData[lessonIndex].content;
+
+            // Update current lesson
+            currentLesson = lessonIndex;
+            updateProgress();
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentLesson + 1) / courseData.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+        }
+
+        // Navigation functions
+        function nextLesson() {
+            if (currentLesson < courseData.length - 1) {
+                showLesson(currentLesson + 1);
+            }
+        }
+
+        function previousLesson() {
+            if (currentLesson > 0) {
+                showLesson(currentLesson - 1);
+            }
+        }
+
+        // ✅ ENHANCED VALIDATION FUNCTIONS
+
+        function autoValidate(lessonId) {
+            // Debounce validation to avoid too many checks
+            clearTimeout(window.validationTimeout);
+            window.validationTimeout = setTimeout(() => {
+                validateSQL(lessonId);
+            }, 500);
+        }
+
+        function validateSQL(lessonId = currentLesson + 1) {
+            const inputId = `sqlInput${lessonId}`;
+            const resultId = `validationResult${lessonId}`;
+            
+            const sqlCode = document.getElementById(inputId).value.trim();
+            const resultDiv = document.getElementById(resultId);
+            
+            if (!sqlCode) {
+                resultDiv.style.display = 'none';
+                return;
+            }
+
+            const validation = checkSQLSyntax(sqlCode, lessonId);
+            
+            resultDiv.innerHTML = validation.message;
+            resultDiv.className = `validation-result ${validation.isValid ? 'validation-success' : 'validation-error'}`;
+            resultDiv.style.display = 'block';
+
+            // Add visual feedback to textarea
+            const textarea = document.getElementById(inputId);
+            if (validation.isValid) {
+                textarea.style.borderColor = '#28a745';
+                textarea.style.boxShadow = '0 0 5px rgba(40, 167, 69, 0.3)';
+            } else {
+                textarea.style.borderColor = '#dc3545';
+                textarea.style.boxShadow = '0 0 5px rgba(220, 53, 69, 0.3)';
+            }
+        }
+
+        function checkSQLSyntax(sqlCode, lessonId) {
+            const upperCode = sqlCode.toUpperCase();
+            
+            // Lesson-specific validation
+            switch(lessonId) {
+                case 1: // Welcome - Basic SELECT
+                    if (upperCode.includes("SELECT") && upperCode.includes("FROM")) {
+                        return {
+                            isValid: true,
+                            message: "✅ Great! You're using SELECT and FROM correctly!"
+                        };
+                    } else if (upperCode.includes("SELECT")) {
+                        return {
+                            isValid: false,
+                            message: "❌ Almost! Remember to include FROM table_name in your SELECT statement."
+                        };
+                    }
+                    break;
+
+                case 2: // CREATE DATABASE
+                    if (/CREATE\s+DATABASE\s+[a-zA-Z_][a-zA-Z0-9_]*\s*;?$/i.test(sqlCode)) {
+                        const dbName = sqlCode.match(/CREATE\s+DATABASE\s+([a-zA-Z_][a-zA-Z0-9_]*)/i)[1];
+                        return {
+                            isValid: true,
+                            message: `✅ Perfect! Database "${dbName}" would be created successfully!`
+                        };
+                    } else if (/CREATE\s+DATABASE/i.test(sqlCode)) {
+                        return {
+                            isValid: false,
+                            message: "❌ Check your database name. It should not contain spaces or special characters."
+                        };
+                    } else if (/CREATE/i.test(sqlCode)) {
+                        return {
+                            isValid: false,
+                            message: "❌ Use CREATE DATABASE (not just CREATE)"
+                        };
+                    }
+                    break;
+
+                case 3: // CREATE TABLE
+                    if (/CREATE\s+TABLE\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\([^)]+\)\s*;?$/i.test(sqlCode)) {
+                        if (!sqlCode.includes("INT") && !sqlCode.includes("VARCHAR")) {
+                            return {
+                                isValid: false,
+                                message: "❌ Remember to specify data types for columns (like INT or VARCHAR)"
+                            };
+                        }
+                        return {
+                            isValid: true,
+                            message: "✅ Excellent! Your table creation syntax is correct!"
+                        };
+                    } else if (/CREATE\s+TABLE/i.test(sqlCode)) {
+                        return {
+                            isValid: false,
+                            message: "❌ Check your parentheses and make sure all columns have data types."
+                        };
+                    }
+                    break;
+            }
+
+            // General SQL validation
+            if (sqlCode.includes(";") && !sqlCode.trim().endsWith(";")) {
+                return {
+                    isValid: false,
+                    message: "❌ Semicolon should be at the very end of the statement."
+                };
+            }
+
+            if (!sqlCode.trim().endsWith(";")) {
+                return {
+                    isValid: false,
+                    message: "⚠️ Don't forget to end your SQL statement with a semicolon (;)"
+                };
+            }
+
+            return {
+                isValid: false,
+                message: "❌ I don't recognize this SQL pattern. Check the lesson examples for guidance."
+            };
+        }
+
+        function clearEditor() {
+            const editors = document.querySelectorAll('.sql-input');
+            editors.forEach(editor => {
+                editor.value = '';
+                editor.style.borderColor = '#34495e';
+                editor.style.boxShadow = 'none';
+            });
+            
+            const results = document.querySelectorAll('.validation-result');
+            results.forEach(result => {
+                result.style.display = 'none';
+            });
+        }
+
+        function showHint(lessonId) {
+            const hintBox = document.getElementById(`hintBox${lessonId}`);
+            hintBox.style.display = 'block';
+        }
+
+        function showSolution(lessonId) {
+            const solutionBox = document.getElementById(`solutionBox${lessonId}`);
+            solutionBox.style.display = 'block';
+        }
+
+        // Initialize the course when page loads
+        window.onload = initializeCourse;
+    </script>
+</body>
+</html>
